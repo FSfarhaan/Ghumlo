@@ -3,17 +3,18 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
-    Platform,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Platform,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import PrimaryGradient from "../components/PrimaryGradient";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import ItineraryInput from "../types/itinerary";
+import { useSearchHistoryStore } from "../store/useSearchHistoryStore";
+import TimePicker from "../components/TimePicker";
 
 const TOTAL_STEPS = 7;
 
@@ -69,7 +70,7 @@ interface SearchHistory extends ItineraryInput {
   id: string;
   destination: string;
   date: string;
-//   groupType: string;
+  //   groupType: string;
   imageUrl: string;
 }
 
@@ -99,6 +100,7 @@ const groupTypes: GroupType[] = [
 ];
 
 export default function QuestionnaireScreen() {
+  const { saveToHistory } = useSearchHistoryStore();
   const router = useRouter();
   const params = useLocalSearchParams();
   const prefilledDestination = params.destination as string | undefined;
@@ -130,7 +132,7 @@ export default function QuestionnaireScreen() {
 
   const togglePreference = (pref: string) => {
     const current = formData.preferences;
-    const updated = current.includes(pref)
+    const updated = current?.includes(pref)
       ? current.filter((p) => p !== pref)
       : [...current, pref];
     updateField("preferences", updated);
@@ -159,44 +161,18 @@ export default function QuestionnaireScreen() {
     }
   };
 
-
-  const saveToHistory = async (input: FormData) => {
-    try {
-      const newHistoryItem: SearchHistory = {
-        id: Date.now().toString(),
-        date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }),
-        imageUrl: input.destination,
-        ...input
-      };
-
-      const historyJson = await AsyncStorage.getItem("search_history");
-      const existingHistory: SearchHistory[] = historyJson ? JSON.parse(historyJson) : [];
-      
-      const updatedHistory = [
-        newHistoryItem, 
-        ...existingHistory.filter(h => h.destination !== input.destination)
-      ].slice(0, 6);
-      
-      await AsyncStorage.setItem("search_history", JSON.stringify(updatedHistory));
-      console.log(newHistoryItem)
-    } catch (error) {
-      console.error("Failed to save history:", error);
-    }
-  };
-
   const handleNext = async () => {
     if (step < TOTAL_STEPS) {
       setStep(step + 1);
     } else if (canProceed()) {
-
       const completeInput = formData as FormData;
       // Save to history
-      await saveToHistory(completeInput);
+      saveToHistory(completeInput);
+
       router.push({
         pathname: "/(flow)/loading",
         params: { input: JSON.stringify(completeInput) },
       });
-      console.log(formData);
     }
   };
 
@@ -214,7 +190,9 @@ export default function QuestionnaireScreen() {
     switch (step) {
       case 1:
         return (
-          <View className="mb-5 bg-white rounded-2xl p-6 border border-white/10 shadow-sm">
+          <View
+            className={`mb-5 bg-white rounded-2xl ${Platform.OS === "web" ? "p-4" : "p-6"}  border border-white/10 shadow-sm`}
+          >
             <Text className="text-3xl font-bold text-gray-900 mb-2 mt-4">
               Where do you want to explore?
             </Text>
@@ -258,7 +236,9 @@ export default function QuestionnaireScreen() {
 
       case 2:
         return (
-          <View className="mb-5 bg-white rounded-2xl p-6 border border-white/10 shadow-sm">
+          <View
+            className={`mb-5 bg-white rounded-2xl ${Platform.OS === "web" ? "p-4" : "p-6"}  border border-white/10 shadow-sm`}
+          >
             <Text className="text-3xl font-bold text-gray-900 mb-2 mt-4">
               How many people?
             </Text>
@@ -299,7 +279,9 @@ export default function QuestionnaireScreen() {
 
       case 3:
         return (
-          <View className="mb-5 bg-white rounded-2xl p-6 border border-white/10 shadow-sm">
+          <View
+            className={`mb-5 bg-white rounded-2xl ${Platform.OS === "web" ? "p-4" : "p-6"}  border border-white/10 shadow-sm`}
+          >
             <Text className="text-3xl font-bold text-gray-900 mb-2 mt-4">
               Budget per person?
             </Text>
@@ -327,9 +309,7 @@ export default function QuestionnaireScreen() {
               />
             </View>
 
-            <View
-              className="flex-row gap-2 mt-4 mb-4 flex-wrap"
-            >
+            <View className="flex-row gap-2 mt-4 mb-4 flex-wrap">
               {[500, 1000, 1500, 2000, 3000].map((amount) => (
                 <TouchableOpacity
                   key={amount}
@@ -357,62 +337,81 @@ export default function QuestionnaireScreen() {
 
       case 4:
         return (
-          <View className="mb-5 bg-white rounded-2xl p-6 border border-white/10 shadow-sm">
+          <View
+            className={`mb-5 bg-white rounded-2xl ${
+              Platform.OS === "web" ? "p-4" : "p-6"
+            } border border-white/10 shadow-sm`}
+          >
             <Text className="text-3xl font-bold text-gray-900 mb-2 mt-4">
               What's your time window?
             </Text>
+
             <Text className="text-base text-gray-600 mb-6">
               When do you want to start and end
             </Text>
 
-            <View className="flex-row gap-4 mb-4">
-              {/* START TIME */}
+            <View className="flex-row gap-4">
+              {/* START */}
               <View className="flex-1">
-                <Text className="text-gray-600 mb-2 text-md">Start Time</Text>
-
+                <Text className="text-gray-600 mb-2">Start Time</Text>
                 <TouchableOpacity
                   onPress={() => setShowPicker("start")}
                   className="flex-row items-center px-4 py-3.5 rounded-xl border border-gray-200"
                 >
                   <Text className="flex-1 text-base text-gray-900">
-                    {formData.timeWindow.start || "09:00 AM"}
+                    {formData.timeWindow.start}
                   </Text>
                   <Ionicons name="time" size={18} color="#6B7280" />
                 </TouchableOpacity>
               </View>
 
-              {/* END TIME */}
+              {/* END */}
               <View className="flex-1">
-                <Text className="text-gray-600 mb-2 text-md">End Time</Text>
-
+                <Text className="text-gray-600 mb-2">End Time</Text>
                 <TouchableOpacity
                   onPress={() => setShowPicker("end")}
                   className="flex-row items-center px-4 py-3.5 rounded-xl border border-gray-200"
                 >
                   <Text className="flex-1 text-base text-gray-900">
-                    {formData.timeWindow.end || "09:00 PM"}
+                    {formData.timeWindow.end}
                   </Text>
                   <Ionicons name="time" size={18} color="#6B7280" />
                 </TouchableOpacity>
               </View>
-
-              {/* TIME PICKER */}
-              {showPicker && (
-                <DateTimePicker
-                  mode="time"
-                  value={new Date()}
-                  is24Hour={true}
-                  display={Platform.OS === "ios" ? "spinner" : "clock"}
-                  onChange={(event, date) => handleTimeChange(showPicker, date)}
-                />
-              )}
             </View>
+
+            {/* PICKERS */}
+            <TimePicker
+              visible={showPicker === "start"}
+              value={formData.timeWindow.start}
+              onClose={() => setShowPicker(null)}
+              onChange={(value) =>
+                setFormData((p) => ({
+                  ...p,
+                  timeWindow: { ...p.timeWindow, start: value },
+                }))
+              }
+            />
+
+            <TimePicker
+              visible={showPicker === "end"}
+              value={formData.timeWindow.end}
+              onClose={() => setShowPicker(null)}
+              onChange={(value) =>
+                setFormData((p) => ({
+                  ...p,
+                  timeWindow: { ...p.timeWindow, end: value },
+                }))
+              }
+            />
           </View>
         );
 
       case 5:
         return (
-          <View className="mb-5 bg-white rounded-2xl p-6 border border-white/10 shadow-sm">
+          <View
+            className={`mb-5 bg-white rounded-2xl ${Platform.OS === "web" ? "p-4" : "p-6"}  border border-white/10 shadow-sm`}
+          >
             <Text className="text-3xl font-bold text-gray-900 mb-2 mt-4">
               What are you in the mood for?
             </Text>
@@ -435,7 +434,7 @@ export default function QuestionnaireScreen() {
                     key={pref.key}
                     onPress={() => togglePreference(pref.key)}
                     className={`flex-row items-center gap-4 px-5 py-3 rounded-full ${
-                      formData.preferences.includes(pref.key)
+                      formData?.preferences?.includes(pref.key)
                         ? "bg-primary"
                         : "bg-primary/5"
                     }`}
@@ -444,14 +443,14 @@ export default function QuestionnaireScreen() {
                       name={iconMap[pref.key] as any}
                       size={20}
                       color={
-                        formData.preferences.includes(pref.key)
+                        formData?.preferences?.includes(pref.key)
                           ? "white"
                           : "#2BAA8C"
                       }
                     />
                     <Text
                       className={`text-md ${
-                        formData.preferences.includes(pref.key)
+                        formData?.preferences?.includes(pref.key)
                           ? "text-white"
                           : "text-primary"
                       }`}
@@ -467,7 +466,9 @@ export default function QuestionnaireScreen() {
 
       case 6:
         return (
-          <View className="mb-5 bg-white rounded-2xl p-6 border border-white/10 shadow-sm">
+          <View
+            className={`mb-5 bg-white rounded-2xl ${Platform.OS === "web" ? "p-4" : "p-6"}  border border-white/10 shadow-sm`}
+          >
             <Text className="text-3xl font-bold text-gray-900 mb-2 mt-4">
               Where are you starting from?
             </Text>
@@ -511,7 +512,9 @@ export default function QuestionnaireScreen() {
 
       case 7:
         return (
-          <View className="mb-5 bg-white rounded-2xl p-6 border border-white/10 shadow-sm">
+          <View
+            className={`mb-5 bg-white rounded-2xl ${Platform.OS === "web" ? "p-4" : "p-6"}  border border-white/10 shadow-sm`}
+          >
             <Text className="text-3xl font-bold text-gray-900 mb-2 mt-4">
               Who are you going with?
             </Text>
@@ -520,44 +523,48 @@ export default function QuestionnaireScreen() {
             </Text>
 
             <View className="gap-3 mb-4">
-            {groupTypes.map((type) => {
+              {groupTypes.map((type) => {
                 const iconMap: Record<string, string> = {
-                    friends: "people-outline",
-                    family: "home-outline",
-                    date: "heart-outline",
+                  friends: "people-outline",
+                  family: "home-outline",
+                  date: "heart-outline",
                 };
                 return (
-                    <TouchableOpacity
-                        key={type.key}
-                        onPress={() => updateField("groupType", type.key)}
-                        className={`flex-row items-center gap-4 p-4 rounded-xl ${
-                            formData.groupType === type.key
-                                ? "bg-primary"
-                                : "bg-primary/5"
+                  <TouchableOpacity
+                    key={type.key}
+                    onPress={() => updateField("groupType", type.key)}
+                    className={`flex-row items-center gap-4 p-4 rounded-xl ${
+                      formData.groupType === type.key
+                        ? "bg-primary"
+                        : "bg-primary/5"
+                    }`}
+                  >
+                    <Ionicons
+                      name={iconMap[type.key] as any}
+                      size={28}
+                      color={
+                        formData.groupType === type.key ? "#fff" : "#2BAA8C"
+                      }
+                    />
+                    <View className="flex-1">
+                      <Text
+                        className={`text-lg font-semibold ${
+                          formData.groupType === type.key
+                            ? "text-white"
+                            : "text-primary"
                         }`}
-                    >
-                        <Ionicons
-                            name={iconMap[type.key] as any}
-                            size={28}
-                            color={formData.groupType === type.key ? "#fff" : "#2BAA8C"}
-                        />
-                        <View className="flex-1">
-                            <Text
-                                className={`text-lg font-semibold ${
-                                    formData.groupType === type.key
-                                        ? "text-white"
-                                        : "text-primary"
-                                }`}
-                            >
-                                {type.label}
-                            </Text>
-                            <Text className={`text-sm ${formData.groupType === type.key ? "text-white" : "text-gray-600"}  mt-1`}>
-                                {type.description}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
+                      >
+                        {type.label}
+                      </Text>
+                      <Text
+                        className={`text-sm ${formData.groupType === type.key ? "text-white" : "text-gray-600"}  mt-1`}
+                      >
+                        {type.description}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
                 );
-            })}
+              })}
             </View>
           </View>
         );
@@ -590,7 +597,10 @@ export default function QuestionnaireScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-[#fafafa]">
-      <ScrollView className="flex-1 px-6 py-5">
+      <ScrollView
+        className={`flex-1 ${Platform.OS == "web" ? "p-4" : "p-6"}`}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Header */}
         <View className="mb-5">
           <TouchableOpacity
@@ -643,12 +653,12 @@ export default function QuestionnaireScreen() {
             <TouchableOpacity
               onPress={handleNext}
               disabled={!canProceed()}
-              className={`flex-row items-center justify-center gap-2 px-6 py-3.5 rounded-xl flex-1`}
+              className={`flex-row items-center justify-center gap-2 px-6 py-0 rounded-xl flex-1`}
             >
               {step === TOTAL_STEPS ? (
                 <>
                   <Ionicons name="sparkles" size={16} color="#fff" />
-                  <Text className="text-lg font-semibold text-white">
+                  <Text className="text-md font-semibold text-white">
                     Generate Itinerary
                   </Text>
                 </>

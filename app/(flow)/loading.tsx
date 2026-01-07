@@ -6,12 +6,13 @@ import {
   Easing,
   StyleSheet,
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import getGroqResult from '../services/groq';
-import { GROQ_API_KEY } from "../config/env";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getGroqResult } from '../services/groq';
+import { GROQ_API_KEY } from '../config/env';
+import { useAIResponseStore } from '../store/useAIResponseStore';
+import { useSearchHistoryStore } from '../store/useSearchHistoryStore';
 
 type PreferenceType = "travel" | "food" | "games" | "hangout" | "religious" | "romantic";
 type GroupTypeKey = "friends" | "family" | "date";
@@ -66,6 +67,8 @@ export default function LoadingScreen() {
   const [currentMessage, setCurrentMessage] = useState(
     loadingMessages[Math.floor(Math.random() * loadingMessages.length)]
   );
+  const { addResponse } = useAIResponseStore();
+  const { saveToHistory } = useSearchHistoryStore();
 
   // Animation values
   const circle1Scale = useRef(new Animated.Value(0.8)).current;
@@ -77,6 +80,36 @@ export default function LoadingScreen() {
   const centerRotation = useRef(new Animated.Value(0)).current;
   const textOpacity = useRef(new Animated.Value(0.5)).current;
   const progressX = useRef(new Animated.Value(-100)).current;
+
+  const generateItinerary = async (input: ItineraryInput) => {
+    try {
+      const result = await getGroqResult(input, GROQ_API_KEY);
+    
+      const response = {
+        id: Date.now().toString(),
+        destination: input.destination,
+        ...result,
+      };
+    
+      addResponse(response);
+      saveToHistory(input);
+
+      setTimeout(() => {
+        router.replace({
+          pathname: "/(flow)/itenary",
+          params: {
+            input: JSON.stringify(input),
+            result: JSON.stringify(response),
+          },
+        }); 
+      }, 1500)
+      
+      
+    } catch (error) {
+      console.error("Failed to generate itinerary:", error);
+      router.replace("/(flow)/questionnaire");
+    }
+  };
 
   useEffect(() => {
     const input: ItineraryInput = JSON.parse(params.input as string);
@@ -96,8 +129,8 @@ export default function LoadingScreen() {
       );
     }, 2000);
 
-    // Generate itinerary
     generateItinerary(input);
+
 
     return () => {
       clearInterval(messageInterval);
@@ -185,39 +218,6 @@ export default function LoadingScreen() {
     });
   };
 
-  const generateItinerary = async (input: ItineraryInput) => {
-    try {
-        setTimeout(async () => {
-            const id: string = Date.now().toString()
-            const destination = input.destination;
-            const result = await getGroqResult(input, GROQ_API_KEY);
-
-            const newResponse = { id, destination, ...result}
-            console.log(newResponse);
-            
-            const historyResponse = await AsyncStorage.getItem("groq_response")
-
-            const existingResponse = historyResponse ? JSON.parse(historyResponse) : [];
-            const updatedResponse = [...existingResponse, newResponse]
-
-            await AsyncStorage.setItem("groq_response", JSON.stringify(updatedResponse));
-            console.log("API Response saved successfully");
-
-            router.replace({
-              pathname: "/(flow)/itenary",
-              params: {
-                input: JSON.stringify(input),
-                result: JSON.stringify(newResponse),
-              },
-            });
-        }, 2000);
-
-    } catch (error) {
-      console.error("Failed to generate itinerary:", error);
-      router.replace("/(flow)/questionnaire");
-    }
-  };
-
   const spin = centerRotation.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
@@ -273,7 +273,7 @@ export default function LoadingScreen() {
               },
             ]}
           >
-            <View className="w-16 h-16 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 items-center justify-center">
+            <View className="w-16 h-16 rounded-full bg-primary items-center justify-center">
               <Ionicons name="location" size={32} color="#fff" />
             </View>
           </Animated.View>
@@ -292,7 +292,7 @@ export default function LoadingScreen() {
         </View>
 
         {/* Progress bar */}
-        <View className="w-64 h-1 bg-gray-200 rounded-full overflow-hidden">
+        {/* <View className="w-64 h-1 bg-gray-200 rounded-full overflow-hidden">
           <Animated.View
             style={[
               styles.progressBar,
@@ -309,7 +309,7 @@ export default function LoadingScreen() {
             ]}
             className="h-full w-full bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full"
           />
-        </View>
+        </View> */}
       </View>
     </SafeAreaView>
   );

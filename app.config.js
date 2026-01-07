@@ -5,7 +5,7 @@ export default {
     name: "ghumighumi",
     slug: "ghumighumi",
     extra: {
-      GROQ_API_KEY: process.env.GROQ_API_KEY,
+      GROQ_API_KEY: process.env.EXPO_PUBLIC_GROQ_API_KEY,
     },
   },
 };

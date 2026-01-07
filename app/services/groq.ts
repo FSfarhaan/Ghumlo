@@ -3,7 +3,7 @@ import buildUserPrompt, { SYSTEM_PROMPT } from "../constants/systemPrompt";
 
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-export default async function getGroqResult(
+export async function getGroqResult(
   input: ItineraryInput,
   apiKey: string
 ): Promise<ItineraryResult> {

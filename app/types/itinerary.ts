@@ -46,7 +46,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  avatar?: string;
+  avatar: string;
 }
 
 export interface SearchHistory {
@@ -54,7 +54,7 @@ export interface SearchHistory {
   destination: string;
   date: string;
   groupType: GroupType;
-  imageUrl: string;
+  imageUrl?: string;
 }
 
 export interface RecommendedPlace {

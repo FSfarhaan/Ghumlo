@@ -9,6 +9,7 @@ import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import { useAuth } from "../contexts/AuthContext";
 import { User } from "../types/itinerary";
+import { Platform } from "react-native";
 
 // REQUIRED for OAuth redirect handling
 WebBrowser.maybeCompleteAuthSession();
@@ -20,33 +21,33 @@ export default function LoginScreen() {
   const { signIn } = useAuth();
 
   // 🔐 Google OAuth config
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    clientId:
-      "474457524110-iv954r6rpg3ecqaq8t1ggd35hna92ub8.apps.googleusercontent.com",
-  });
+  // const [request, response, promptAsync] = Google.useAuthRequest({
+  //   clientId:
+  //     "474457524110-iv954r6rpg3ecqaq8t1ggd35hna92ub8.apps.googleusercontent.com",
+  // });
 
   // ✅ Handle Google response
-  useEffect(() => {
-    if (response?.type === "success") {
-      const { authentication } = response;
+  // useEffect(() => {
+  //   if (response?.type === "success") {
+  //     const { authentication } = response;
 
-      console.log("Google Access Token:", authentication?.accessToken);
+  //     console.log("Google Access Token:", authentication?.accessToken);
 
-      // TODO (later):
-      // - send token to backend
-      // - receive JWT
-      // - store securely
+  //     // TODO (later):
+  //     // - send token to backend
+  //     // - receive JWT
+  //     // - store securely
 
-      router.replace("/(tabs)");
-    }
+  //     router.replace("/(tabs)");
+  //   }
 
-    setIsLoading(false);
-  }, [response]);
+  //   setIsLoading(false);
+  // }, [response]);
 
-  const handleGoogleLogin = () => {
-    setIsLoading(true);
-    promptAsync();
-  };
+  // const handleGoogleLogin = () => {
+  //   setIsLoading(true);
+  //   promptAsync();
+  // };
 
   const handleDemoLogin = () => {
     setIsLoading(true);
@@ -68,17 +69,19 @@ export default function LoginScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white items-center justify-center px-6 overflow-hidden">
       {/* Background blobs */}
-      <View className="absolute top-20 left-10 w-64 h-64 rounded-full bg-green-500/10 blur-3xl" />
-      {/* <View
-        className="absolute bottom-20 right-10 w-96 h-96 rounded-full bg-emerald-400/20 blur-3xl"
-      /> */}
+      <View 
+        className={`absolute top-20 left-10 ${Platform.OS === "web" ? "w-36 h-36" : "w-48 h-48"}  rounded-full bg-green-500/5 `} />
+      <View
+        className={`absolute bottom-8 right-8 ${Platform.OS === "web" ? "w-48 h-48" : "w-64 h-64"} rounded-full bg-emerald-400/10 `}
+      />
 
       {/* Content */}
-      <View className="items-center max-w-md ">
+      <View className="items-center max-w-md px-6">
         {/* Logo */}
         <PrimaryGradient>
-          <View className="w-28 h-28 items-center justify-center">
-            <Ionicons name="location-outline" size={48} color="white" />
+          <View className={`${Platform.OS === "web" ? "w-20 h-20" : "w-28 h-28"}  items-center justify-center`}>
+            {Platform.OS === "web" ? <Ionicons name="location-outline" size={36} color="white" />
+            : <Ionicons name="location-outline" size={48} color="white" />}
           </View>
         </PrimaryGradient>
 
@@ -109,14 +112,19 @@ export default function LoginScreen() {
 
         {/* Login button */}
         <View className="w-full">
-          <PrimaryGradient>
+          <PrimaryGradient className={`${isLoading && "opacity-50"}`}>
             <Pressable
-              disabled={!request || isLoading}
+              disabled={isLoading}
               onPress={handleDemoLogin}
-              className="flex-row items-center justify-center gap-4 h-14 px-10"
+              className="flex-row items-center justify-center gap-4 h-14 px-10 min-w-3/4"
             >
               {isLoading ? (
+                <>
                 <ActivityIndicator color="white" />
+                <Text className="font-semibold text-white text-xl">
+                    Logging in
+                  </Text>
+                </>
               ) : (
                 <>
                   <Ionicons name="logo-google" size={20} color="white" />

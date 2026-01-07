@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Image,
+  Platform,
+  Pressable,
   ScrollView,
   Share,
   Text,
@@ -14,6 +15,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PrimaryGradient from '../components/PrimaryGradient';
 import getPlaceImage from '../data/placesData';
+import { useLikedItemsStore } from '../store/useLikedItemsStore';
 
 type PreferenceType = "travel" | "food" | "games" | "hangout" | "religious" | "romantic";
 type GroupTypeKey = "friends" | "family" | "date";
@@ -55,13 +57,13 @@ interface ItineraryResult {
 // Mock function - replace with your actual function
 
 export default function ItineraryScreen() {
+  const { toggleLike, isLiked } = useLikedItemsStore();
   const router = useRouter();
   const params = useLocalSearchParams();
   
   const input: ItineraryInput = JSON.parse(params.input as string);
   const result: ItineraryResult = JSON.parse(params.result as string);
 
-  console.log(result);
   
   const heroImage = getPlaceImage(input?.destination);
 
@@ -88,62 +90,26 @@ export default function ItineraryScreen() {
   };
 
   const handleBack = () => {
-    router.back();
+    router.replace("/(tabs)")
   };
 
   const removePrice = (text: string): string => {
     return text.replace(/\s*\(₹\s*\d+(\s*[-–]\s*\d+)?\)/g, "").trim();
   }
 
-  const [isLiked, setIsLiked] = useState(false);
-
-  const checkIfLiked = async () => {
-    try {
-      const liked = await AsyncStorage.getItem("liked_itenary");
-      if (liked) {
-        const likedData = JSON.parse(liked);
-        const likedItem = likedData.find((item: any) => item.destination === input.destination);
-        setIsLiked(!!likedItem);
-      }
-    } catch (e) {
-      console.error("Failed to check liked status:", e);
-    }
-  };
-
-  useEffect(() => {
-    checkIfLiked();
-  }, []);
-
-  const handleLike = async () => {
-    try {
-      const liked = await AsyncStorage.getItem("liked_itenary");
-      let likedData = liked ? JSON.parse(liked) : [];
-      
-      if (isLiked) {
-        likedData = likedData.filter((item: any) => item.destination !== input.destination);
-      } else {
-        likedData.push({
-          id: Date.now().toString(),
-          destination: input.destination,
-          input: JSON.stringify(input),
-          result: JSON.stringify(result),
-          imageUrl: heroImage,
-          date: new Date().toLocaleDateString(),
-          groupType: input.groupType
-        });
-      }
-      
-      await AsyncStorage.setItem("liked_itenary", JSON.stringify(likedData));
-      setIsLiked(!isLiked);
-    } catch (e) {
-      console.error("Failed to toggle like:", e);
-    }
-  };
+  const onSelectDestination = (destination: string) => {
+    if (destination) {
+      router.push({
+        pathname: "/(flow)/questionnaire",
+        params: { destination },
+      });
+    }; 
+  }
 
 
   return (
     <SafeAreaView className="flex-1 bg-[#fafafa]">
-      <ScrollView className="flex-1">
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Hero Section */}
         <View className="relative h-64">
           <Image
@@ -170,10 +136,14 @@ export default function ItineraryScreen() {
             
             <View className="flex-row gap-2">
               <TouchableOpacity
-                onPress={handleLike}
+                onPress={() => toggleLike({
+                  id: Date.now().toString(),
+                  date: new Date().toLocaleDateString(),
+                  ...input
+                })}
                 className="p-2.5 rounded-full bg-white/90"
               >
-                <Ionicons name={isLiked ? "heart" : "heart-outline"} size={18} color="#ef4444" />
+                <Ionicons name={isLiked(input.destination) ? "heart" : "heart-outline"} size={18} color="#ef4444" />
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={handleRegenerate}
@@ -207,23 +177,23 @@ export default function ItineraryScreen() {
         </View>
 
         {/* Content */}
-        <View className="px-4 -mt-4 relative z-10">
+        <View className={`${Platform.OS === "web" ? "px-4" : "px-6"}  -mt-4 relative z-10`}>
           {/* Meta Info Card */}
           <View className="flex-row flex-wrap items-center gap-3 mb-6 p-4 bg-white rounded-2xl border border-gray-200 shadow-sm">
             <View className="flex-row items-center gap-2">
               <Ionicons name="time" size={16} color="#2BAA8C" />
-              <Text className="text-sm text-gray-600">
-                {input.timeWindow.start} - {input.timeWindow.end}
+              <Text className={`${Platform.OS === "web" ? "text-xs" : "text-sm"}  text-gray-600`}>
+                {input?.timeWindow?.start} - {input?.timeWindow?.end}
               </Text>
             </View>
 
             <View className="w-1 h-1 rounded-full bg-gray-300" />
-            <Text className="text-sm text-gray-600">
+            <Text className={`${Platform.OS === "web" ? "text-xs" : "text-sm"}  text-gray-600`}>
               {input.peopleCount} {input.peopleCount === 1 ? "person" : "people"}
             </Text>
             <View className="w-1 h-1 rounded-full bg-gray-300" />
             <View className="px-3 py-1.5 rounded-full bg-primary/10">
-              <Text className="text-sm text-primary capitalize">
+              <Text className={`${Platform.OS === "web" ? "text-xs" : "text-sm"}  text-primary capitalize`}>
                 {input.groupType}
               </Text>
             </View>
@@ -236,14 +206,14 @@ export default function ItineraryScreen() {
             </Text>
             
             {result.stops.map((stop, index) => {
-              const isLast = index === result.stops.length - 1;
+              const isLast = index === result?.stops?.length - 1;
               const imageUrl = stop.imageUrl || getPlaceImage(stop.location, stop.description);
               
               return (
-                <View key={stop.id} className="relative pl-8 pb-8 pr-4">
+                <View key={stop.id} className="relative pl-8 pb-8 pr-0">
                   {/* Timeline line */}
                   {!isLast && (
-                  <PrimaryGradient className="absolute left-[11px] top-8 w-0.5 bg-primary h-full rounded-none overflow-auto" optColors={["#2BAA8C", "#ffffff"]}/>
+                  <PrimaryGradient className="absolute left-[11px] top-8 w-0.5 bg-primary   h-full rounded-none overflow-auto" optColors={["#2BAA8C", "#ffffff"]}/>
                   )}
                   
                   {/* Timeline dot */}
@@ -269,10 +239,10 @@ export default function ItineraryScreen() {
                       <View className="absolute top-3 left-3 flex-row gap-4 justify-between">
                         <View className="flex-row items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 shadow-sm">
                           <Ionicons name="time-outline" size={16} color="#2BAA8C" />
-                          <Text className="text-sm font-medium text-gray-900">{stop.time}</Text>
+                          <Text className={` ${Platform.OS === "web" ? "text-xs" : "text-sm"} font-medium text-gray-900`}>{stop.time}</Text>
                         </View>
                         <View className="px-2 py-1 rounded-full bg-black/30 justify-center">
-                          <Text className="text-sm text-white">{stop.duration}</Text>
+                          <Text className={`${Platform.OS === "web" ? "text-xs" : "text-sm"} text-white`}>{stop.duration}</Text>
                         </View>
                       </View>
                     </View>
@@ -312,7 +282,7 @@ export default function ItineraryScreen() {
           </View>
 
           {/* Budget Summary */}
-          <View className="mt-4 px-2">
+          <View className="mt-4">
             <View className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
               
               <View className="flex-row items-center gap-2 mb-4">
@@ -366,8 +336,8 @@ export default function ItineraryScreen() {
           </View>
 
           {/* Nearby Attractions */}
-          {result.nearbyAttractions && result.nearbyAttractions.length > 0 && (
-            <View className="mt-10 px-2">
+          {result?.nearbyAttractions && result?.nearbyAttractions?.length > 0 && (
+            <View className="mt-10">
               <View className="flex-row items-center gap-2 mb-4">
                 <Ionicons name="location-outline" size={20} color="#2BAA8C" />
                 <Text className="text-xl font-bold text-gray-900">Nearby Places to Explore</Text>
@@ -375,7 +345,7 @@ export default function ItineraryScreen() {
               
               <View className="flex-row flex-wrap gap-4">
                 {result.nearbyAttractions.map((place, index) => (
-                  <View key={index} className="w-[48%] overflow-hidden rounded-2xl shadow-sm border border-gray-200">
+                  <Pressable onPress={() => onSelectDestination(place)} key={index} className="w-[48%] overflow-hidden rounded-2xl shadow-sm border border-gray-200 flex-1" style={{ minWidth: "45%"}}>
                     <View className="relative h-32 overflow-hidden">
                       <Image
                         source={{ uri: getPlaceImage(place) }}
@@ -392,14 +362,14 @@ export default function ItineraryScreen() {
                         <Text className="font-semibold text-white text-sm">{place}</Text>
                       </View>
                     </View>
-                  </View>
+                  </Pressable>
                 ))}
               </View>
             </View>
           )}
 
           {/* Action Buttons */}
-          <View className="mt-10 gap-3 px-2">
+          <View className="mt-10 gap-3">
             <TouchableOpacity
               onPress={handleRegenerate}
               className="flex-row items-center justify-center gap-2 px-6 py-4 bg-primary/5 rounded-xl w-full border border-gray-200"

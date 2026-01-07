@@ -100,74 +100,72 @@ export default function getPlaceImage(
   placeName: string,
   activity?: string
 ): string {
-  const lowerPlace = placeName.toLowerCase();
-
-  
+  const lowerPlace = placeName?.toLowerCase();
 
   if (activity) {
-    const a = activity.toLowerCase();
+    const a = activity?.toLowerCase();
 
     // 🍽️ Food
     if (
-      a.includes("food") ||
-      a.includes("eat") ||
-      a.includes("restaurant") ||
-      a.includes("cafe") ||
-      a.includes("breakfast") ||
-      a.includes("lunch") ||
-      a.includes("dinner") ||
-      a.includes("street food")
+      a?.includes("food") ||
+      a?.includes("eat") ||
+      a?.includes("restaurant") ||
+      a?.includes("cafe") ||
+      a?.includes("breakfast") ||
+      a?.includes("lunch") ||
+      a?.includes("dinner") ||
+      a?.includes("street food")
     ) {
       return FOOD_IMAGES[Math.floor(Math.random() * FOOD_IMAGES.length)];
     }
 
     // ❤️ Romantic / date
     if (
-      a.includes("date") ||
-      a.includes("romantic") ||
-      a.includes("couple")
+      a?.includes("date") ||
+      a?.includes("romantic") ||
+      a?.includes("couple")
     ) {
       return ROMANTIC_IMAGES[Math.floor(Math.random() * ROMANTIC_IMAGES.length)];
     }
 
     // 🌅 Sunrise
-    if (a.includes("sunrise") || a.includes("morning")) {
+    if (a?.includes("sunrise") || a?.includes("morning")) {
       return SUNRISE_IMAGES[Math.floor(Math.random() * SUNRISE_IMAGES.length)];
     }
 
     // 🌇 Sunset
-    if (a.includes("sunset") || a.includes("evening")) {
+    if (a?.includes("sunset") || a?.includes("evening")) {
       return SUNSET_IMAGES[Math.floor(Math.random() * SUNSET_IMAGES.length)];
     }
 
     // 🌃 Night
-    if (a.includes("night")) {
+    if (a?.includes("night")) {
       return NIGHT_CITY_IMAGES[Math.floor(Math.random() * NIGHT_CITY_IMAGES.length)];
     }
 
-    if(a.includes("cafe")) {
+    if(a?.includes("cafe")) {
       return CAFE_IMAGES[Math.floor(Math.random() * CAFE_IMAGES.length)];
     }
 
     // 🚆 Transport
-    if (a.includes("train")) {
+    if (a?.includes("train")) {
       return TRAIN_IMAGES[Math.floor(Math.random() * TRAIN_IMAGES.length)];
     }
 
-    if (a.includes("metro")) {
+    if (a?.includes("metro")) {
       return METRO_IMAGES[Math.floor(Math.random() * METRO_IMAGES.length)];
     }
 
-    if (a.includes("taxi") || a.includes("cab")) {
+    if (a?.includes("taxi") || a?.includes("cab")) {
       return TAXI_IMAGES[Math.floor(Math.random() * TAXI_IMAGES.length)];
     }
 
     // 🚶 Walking / explore
     if (
-      a.includes("walk") ||
-      a.includes("explore") ||
-      a.includes("stroll") ||
-      a.includes("fun")
+      a?.includes("walk") ||
+      a?.includes("explore") ||
+      a?.includes("stroll") ||
+      a?.includes("fun")
     ) {
       return WALK_IMAGES[Math.floor(Math.random() * WALK_IMAGES.length)];
     }
@@ -175,7 +173,7 @@ export default function getPlaceImage(
 
   // 1. Exact place matches
   for (const [key, url] of Object.entries(PLACE_IMAGES)) {
-    if (lowerPlace.includes(key) || key.includes(lowerPlace)) {
+    if (lowerPlace?.includes(key) || key?.includes(lowerPlace)) {
       return url;
     }
   }
