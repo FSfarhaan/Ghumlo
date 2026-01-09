@@ -9,7 +9,7 @@ export default {
     icon: "./assets/images/icon.png",
     scheme: "ghumighumi",
     userInterfaceStyle: "automatic",
-    newArchEnabled: false,
+    newArchEnabled: true,
     extra: {
       GROQ_API_KEY: process.env.EXPO_PUBLIC_GROQ_API_KEY,
     },
@@ -18,6 +18,7 @@ export default {
       supportsTablet: true
     },
     android: {
+      package: "com.fsfarhaanshaikh7.ghumighumi",
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
         foregroundImage: "./assets/images/android-icon-foreground.png",
