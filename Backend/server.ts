@@ -2,9 +2,9 @@ import express, { Request, response, Response } from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
-import User from "./model/User";
-import buildUserPrompt, { SYSTEM_PROMPT } from "./constants/systemPrompt";
-import { ItineraryResult } from "./types/types";
+import User from "./src/model/User";
+import buildUserPrompt, { SYSTEM_PROMPT } from "./src/constants/systemPrompt";
+import { ItineraryResult } from "./src/types/types";
 
 dotenv.config();
 
