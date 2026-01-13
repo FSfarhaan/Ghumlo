@@ -54,19 +54,24 @@ app.post("/user/login", async (req: Request, res: Response) => {
  * 2️⃣ ADD TRIP SEARCH
  */
 app.post("/user/add-trip", async (req: Request, res: Response) => {
-  const { email, trip } = req.body;
-
-  if (!email || !trip) {
-    return res.status(400).json({ message: "Email and trip required" });
+  try {
+    const { email, trip } = req.body;
+  
+    if (!email || !trip) {
+      return res.status(400).json({ message: "Email and trip required" });
+    }
+  
+    await User.findOneAndUpdate(
+      { email },
+      { $push: { trips: trip } },
+      { new: true }
+    );
+  
+    res.status(200).json("Trip added successfully");
+  } catch (error) {
+    console.log(error);
+    res.status(500).json("Adding trips failed");
   }
-
-  const user = await User.findOneAndUpdate(
-    { email },
-    { $push: { trips: trip } },
-    { new: true }
-  );
-
-  res.json(user);
 });
 
 /**
