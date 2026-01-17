@@ -3,11 +3,14 @@ import AuthProvider from "./contexts/AuthContext";
 import "./config/env"
 import { configureGoogleSignIn } from "./services/googleSigninApp";
 import { useEffect } from "react";
+import { Platform } from "react-native";
 
 
 export default function RootLayout() {  
   useEffect(() => {
-    configureGoogleSignIn();
+    if (Platform.OS !== "web") {
+      configureGoogleSignIn();
+    }
   }, []);
   
   return (
