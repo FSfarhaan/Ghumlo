@@ -3,10 +3,23 @@ import AuthProvider from "./contexts/AuthContext";
 import "./config/env"
 import { configureGoogleSignIn } from "./services/googleSigninApp";
 import { useEffect } from "react";
-import { Platform } from "react-native";
+import { Platform, Text, View } from "react-native";
+import { useFonts } from "expo-font";
+import { Ionicons } from "@expo/vector-icons";
 
 
 export default function RootLayout() {  
+
+  const [fontsLoaded] = useFonts({
+    ...Ionicons.font,
+  });
+
+  if (!fontsLoaded) {
+    return <View>
+      <Text>Fonts not loaded</Text>
+    </View>; // or splash loader
+  }
+
   useEffect(() => {
     if (Platform.OS !== "web") {
       configureGoogleSignIn();
