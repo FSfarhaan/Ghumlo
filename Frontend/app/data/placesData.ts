@@ -221,10 +221,10 @@ export const RECOMMENDED_PLACES = [
   },
   {
     id: "6",
-    name: "Siddhivinayak Temple",
-    category: "Religious",
-    imageUrl: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?w=800&q=80",
-    rating: 4.9,
+    name: "Girgaum Chowpatty",
+    category: "Beach",
+    imageUrl: "https://im.whatshot.in/img/2018/Mar/girgaon-chowpatty-1520424523.jpg",
+    rating: 4.3,
   },
   {
     id: "7",
@@ -241,6 +241,7 @@ export const RECOMMENDED_PLACES = [
     rating: 4.3,
   },
 ];
+
 
 export function getRecommendedPlaces(count: number = 4) {
   const shuffled = [...RECOMMENDED_PLACES].sort(() => 0.5 - Math.random());

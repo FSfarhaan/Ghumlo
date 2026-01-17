@@ -10,7 +10,7 @@ export function configureGoogleSignIn() {
 }
 
 
-export async function signInWithGoogle() {
+export async function signInWithGoogleApp() {
   try {
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
@@ -26,7 +26,7 @@ export async function signInWithGoogle() {
 }
 
 
-export async function signOutFromGoogle() {
+export async function signOutFromGoogleApp() {
   try {
     await GoogleSignin.signOut(); // removes account from app
     console.log('User signed out from Google');

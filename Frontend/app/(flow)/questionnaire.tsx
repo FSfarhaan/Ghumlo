@@ -206,7 +206,7 @@ export default function QuestionnaireScreen() {
             </Text>
 
             <TextInput
-              className="w-full px-4 py-3.5  rounded-xl border border-gray-200 text-base text-gray-900"
+              className="w-full px-4 py-3.5 rounded-xl border border-gray-200 text-base text-gray-900 ring-0"
               value={formData.destination}
               onChangeText={(text) => updateField("destination", text)}
               placeholder="e.g., Gateway of India"

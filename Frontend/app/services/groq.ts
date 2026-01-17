@@ -6,13 +6,13 @@ export async function getGroqResult(
   input: ItineraryInput
 ): Promise<ItineraryResult> {
 
-  const response = await fetch(BASE_URL, {
+  const response = await fetch(`${BASE_URL}/grok`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       // Authorization: `Bearer ${token}` // optional later
     },
-    body: JSON.stringify(input),
+    body: JSON.stringify({input: input}),
   });
 
   if (!response.ok) {

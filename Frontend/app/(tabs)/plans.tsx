@@ -29,7 +29,7 @@ export default function PlansScreen() {
     
   const [filteredHistory, setFilteredHistory] = useState<typeof searchHistory>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortAsc, setSortAsc] = useState(true);
+  const [sortAsc, setSortAsc] = useState(false);
 
   useEffect(() => {
     let filtered = searchHistory?.filter((item) =>

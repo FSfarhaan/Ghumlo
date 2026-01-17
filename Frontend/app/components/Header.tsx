@@ -5,7 +5,8 @@ import { Image, Platform, Pressable, Text, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useAuth } from '../contexts/AuthContext'
 import { useConfirm } from '../hooks/useConfirm'
-import { signOutFromGoogle } from '../services/googleSignin'
+import { signOutFromGoogleApp } from '../services/googleSigninApp'
+import { signOutFromGoogleWeb } from '../services/googleSigninWeb'
 
 const Header = () => {
   const { user, signOut } = useAuth();
@@ -19,7 +20,12 @@ const Header = () => {
     });
 
     if (confirmed) {
-      await signOutFromGoogle();
+      if(Platform.OS === "web") {
+        await signOutFromGoogleWeb();
+      } 
+      else {
+        await signOutFromGoogleApp();
+      }
       signOut()
       router.replace("/(auth)/login");
     }

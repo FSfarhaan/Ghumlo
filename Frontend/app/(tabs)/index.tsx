@@ -56,7 +56,7 @@ export default function DashboardScreen() {
           {/* Hero */}
           <View className="mb-8">
             <Text className="text-3xl font-bold text-black">
-              Plan your perfects
+              Plan your perfect
             </Text>
             <Text className="text-4xl font-bold text-primary">Mumbai day</Text>
             <Text className="text-neutral-500 mt-2">

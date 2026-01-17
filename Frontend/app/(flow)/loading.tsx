@@ -1,19 +1,19 @@
-import React, { useEffect, useState, useRef } from 'react';
-import {
-  View,
-  Text,
-  Animated,
-  Easing,
-  StyleSheet,
-} from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { getGroqResult } from '../services/groq';
-import { useAIResponseStore } from '../store/useAIResponseStore';
-import { useSearchHistoryStore } from '../store/useSearchHistoryStore';
+import React, { useEffect, useState, useRef } from "react";
+import { View, Text, Animated, Easing, StyleSheet } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { getGroqResult } from "../services/groq";
+import { useAIResponseStore } from "../store/useAIResponseStore";
+import { useSearchHistoryStore } from "../store/useSearchHistoryStore";
 
-type PreferenceType = "travel" | "food" | "games" | "hangout" | "religious" | "romantic";
+type PreferenceType =
+  | "travel"
+  | "food"
+  | "games"
+  | "hangout"
+  | "religious"
+  | "romantic";
 type GroupTypeKey = "friends" | "family" | "date";
 
 interface TimeWindow {
@@ -63,36 +63,32 @@ export default function LoadingScreen() {
   const generateItinerary = async (input: ItineraryInput) => {
     try {
       const result = await getGroqResult(input);
-    
-      const response = {
-        id: Date.now().toString(),
-        destination: input.destination,
-        ...result,
-      };
-    
-      addResponse(response);
-      saveToHistory(input);
+      if (result) {
+        const response = {
+          id: Date.now().toString(),
+          destination: input.destination,
+          ...result,
+        };
 
-      setTimeout(() => {
+        addResponse(response);
+        saveToHistory(input);
         router.replace({
           pathname: "/(flow)/itenary",
           params: {
             input: JSON.stringify(input),
             result: JSON.stringify(response),
           },
-        }); 
-      }, 1500)
-      
-      
+        });
+      }
     } catch (error) {
       console.error("Failed to generate itinerary:", error);
-      router.replace("/(flow)/questionnaire");
+      router.replace("/(tabs)");
     }
   };
 
   useEffect(() => {
     const input: ItineraryInput = JSON.parse(params.input as string);
-    
+
     // Start all animations
     startCircleAnimation(circle1Scale, circle1Opacity, 0);
     startCircleAnimation(circle2Scale, circle2Opacity, 400);
@@ -109,7 +105,6 @@ export default function LoadingScreen() {
     }, 2000);
 
     generateItinerary(input);
-
 
     return () => {
       clearInterval(messageInterval);
@@ -199,7 +194,7 @@ export default function LoadingScreen() {
 
   const spin = centerRotation.interpolate({
     inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
+    outputRange: ["0deg", "360deg"],
   });
 
   return (
@@ -296,12 +291,12 @@ export default function LoadingScreen() {
 
 const styles = StyleSheet.create({
   circle: {
-    position: 'absolute',
+    position: "absolute",
   },
   centerIcon: {
-    position: 'absolute',
+    position: "absolute",
   },
   progressBar: {
-    position: 'absolute',
+    position: "absolute",
   },
 });

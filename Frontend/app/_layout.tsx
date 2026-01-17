@@ -1,7 +1,7 @@
 import { Stack } from "expo-router";
 import AuthProvider from "./contexts/AuthContext";
 import "./config/env"
-import { configureGoogleSignIn } from "./services/googleSignin";
+import { configureGoogleSignIn } from "./services/googleSigninApp";
 import { useEffect } from "react";
 
 
