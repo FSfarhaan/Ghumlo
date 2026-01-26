@@ -74,7 +74,7 @@ Feel free to open an issue or submit a pull request to improve features or UI.
 
 ## 📬 Contact
 
-If you have any questions or suggestions, feel free to contact me at **[farhaan8@gmail.com](mailto:farhaan8@gmail.com)**
+If you have any questions or suggestions, feel free to contact me at **[farhaan8d@gmail.com](mailto:farhaan8d@gmail.com)**
 or connect with me on [LinkedIn](https://www.linkedin.com/in/fsfarhaanshaikh).
 
 ---
