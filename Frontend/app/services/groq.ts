@@ -1,5 +1,4 @@
 import ItineraryInput, { ItineraryResult, ItineraryStop } from "../types/itinerary";
-// for local dev: http://localhost:3000/api/itinerary
 import { BASE_URL } from "../config/env";
 
 export async function getGroqResult(

@@ -10,6 +10,12 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function RootLayout() {  
 
+  useEffect(() => {
+    if (Platform.OS !== "web") {
+      configureGoogleSignIn();
+    }
+  }, []);
+  
   const [fontsLoaded] = useFonts({
     ...Ionicons.font,
   });
@@ -20,11 +26,6 @@ export default function RootLayout() {
     </View>; // or splash loader
   }
 
-  useEffect(() => {
-    if (Platform.OS !== "web") {
-      configureGoogleSignIn();
-    }
-  }, []);
   
   return (
     <AuthProvider>

@@ -35,7 +35,6 @@ export default {
     android: {
       package: "com.fsfarhaanshaikh7.ghumighumi",
       adaptiveIcon: {
-        backgroundColor: "#E6F4FE",
         foregroundImage: "./assets/images/appicon.png",
         backgroundColor: "#FFFFFF"
       },
