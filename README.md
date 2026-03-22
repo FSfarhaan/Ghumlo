@@ -1,80 +1,143 @@
 
----
-
 # 🧭 Ghumlo
+
+🌐 Live Web Version: [https://ghumlo.vercel.app](https://ghumlo.vercel.app)
+
+---
 
 ## 📖 Description
 
-Ghumlo is an AI-powered travel itinerary planning application that helps users plan personalized trips effortlessly. Users can generate day-wise itineraries based on location, duration, preferences, and budget, making travel planning simple, fast, and stress-free.
+Ghumlo is an **AI-powered travel planning app built with Expo (React Native)** that helps users create personalized travel itineraries in seconds.
+
+Instead of spending hours researching places, routes, and schedules, users simply enter their destination, trip duration, and preferences — and Ghumlo generates a **complete day-wise travel plan**.
+
+Designed with a **mobile-first approach**, Ghumlo focuses on simplicity, speed, and real-world usability for travelers on the go.
+
+---
 
 ## ✨ Features
 
-* 🗺️ **AI-Based Itinerary Generation**: Automatically creates smart, day-wise travel plans.
-* 📍 **Location-Based Planning**: Suggests places, activities, and routes for selected destinations.
-* 🕒 **Day-wise Breakdown**: Clearly structured itineraries for each day of the trip.
-* 🎯 **Personalized Experience**: Plans adapt to user preferences and trip duration.
-* 📱 **Cross-Platform Support**: Works seamlessly on web and mobile.
+* 🗺️ **AI Itinerary Generation**
+  Generate smart, structured travel plans instantly using AI.
 
-## 🚀 Installation
+* 📍 **Location-Aware Suggestions**
+  Recommends places, activities, and routes based on destination.
 
-1. **Clone the repository**:
+* 🕒 **Day-wise Planning**
+  Clean breakdown of each day with organized activities.
 
-   ```bash
-   git clone https://github.com/FSfarhaan/Ghumlo.git
-   cd ghumlo
-   ```
+* 🎯 **Personalized Trips**
+  Adapts itineraries based on user preferences and trip duration.
 
-2. **Install dependencies**:
+* 📱 **Mobile-First Experience (Expo)**
+  Built primarily for mobile using React Native (Expo), with a web version available.
 
-   ```bash
-   # Install frontend dependencies
-   npm install
-   ```
+---
 
-3. **Run the application**:
+## 🚀 Installation (Expo App)
 
-   ```bash
-   npm start
-   ```
+### 1️⃣ Clone the repository
 
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
+```bash
+git clone https://github.com/FSfarhaan/Ghumlo.git
+cd ghumlo
+```
+
+---
+
+### 2️⃣ Install dependencies
+
+```bash
+npm install
+```
+
+---
+
+### 3️⃣ Run the app (Expo)
+
+```bash
+npx expo start
+```
+
+Then:
+
+* Scan QR with Expo Go (Android/iOS)
+* Or run on emulator
+
+---
+
+## 🌐 Running Web Version (Optional)
+
+```bash
+npm run web
+```
+
+Or directly use:
+👉 [https://ghumlo.vercel.app](https://ghumlo.vercel.app)
+
+---
 
 ## 🛠️ Usage
 
-1. **Enter your travel destination**.
-2. **Select number of days and preferences**.
-3. **Generate your personalized itinerary**.
-4. **Explore the plan and start your journey** ✈️
+1. Enter your **destination**
+2. Select **trip duration**
+3. Add **preferences (optional)**
+4. Generate itinerary
+5. Follow your plan and travel stress-free ✈️
 
-## 🧩 Code Overview
+---
 
-* **Frontend**:
+## 🧩 Tech Stack
 
-  * **React / React Native (Expo)**: User interface and navigation.
-* **Backend / AI Logic**:
+### 📱 Frontend (Primary)
 
-  * **Node.js**: Handles itinerary generation logic.
-* **AI Integration**:
+* **React Native (Expo)** → Mobile-first UI
+* **React Navigation** → App navigation
 
-  * **LLM API**: Generates intelligent travel plans.
-* **State Management**:
+### 🌐 Web Support
 
-  * Manages user input, itinerary data, and preferences.
+* Expo Web (for browser access)
+
+### ⚙️ Backend
+
+* **Node.js** → Handles itinerary logic
+
+### 🧠 AI Integration
+
+* **LLM API** → Generates intelligent travel plans
+
+### 📦 State Management
+
+* Handles user input, itinerary state, and responses
+
+---
 
 ## 🤝 Contributing
 
 Contributions are welcome!
-Feel free to open an issue or submit a pull request to improve features or UI.
+
+If you have ideas to improve:
+
+* UX
+* AI quality
+* Performance
+
+Feel free to open an issue or submit a PR.
+
+---
 
 ## 📸 Screenshots
 
-<!-- Add screenshots of your app here -->
+<!-- Add screenshots here -->
 
-![Screenshot1](screenshots/screenshot1.jpeg)
+![Screenshot1](screenshots/ss1.jpeg)
+![Screenshot2](screenshots/ss2.jpeg)
+
+---
 
 ## 📬 Contact
 
-If you have any questions or suggestions, feel free to contact me at **[farhaan8d@gmail.com](mailto:farhaan8d@gmail.com)**
-or connect with me on [LinkedIn](https://www.linkedin.com/in/fsfarhaanshaikh).
+📧 [farhaan8d@gmail.com](mailto:farhaan8d@gmail.com)
+🔗 [https://www.linkedin.com/in/fsfarhaanshaikh](https://www.linkedin.com/in/fsfarhaanshaikh)
 
 ---
